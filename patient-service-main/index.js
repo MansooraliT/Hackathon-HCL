@@ -60,4 +60,4 @@ const express = require('express');
       console.log(`Patient service listening at http://0.0.0.0:${port}`);
     });
 
-    // deploy app to ecs Fargate
+    // deploy app to ecs 
