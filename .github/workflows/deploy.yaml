@@ -1,0 +1,48 @@
+name: Deploy to Fargate
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'patient-service/**'
+      - 'appointment-service/**'
+      - '.github/workflows/deploy.yml'
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPO_PATIENT: patient-service
+  ECR_REPO_APPOINTMENT: appointment-service
+  ECS_CLUSTER: healthcare-cluster
+  ECS_SERVICE_PATIENT: patient-service
+  ECS_SERVICE_APPOINTMENT: appointment-service
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::539935451710:role/github_oidc
+          aws-region: us-east-1
+          role-session-name: GitHubActions-Terraform
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push patient-service
+        run: |
+          docker build -t $ECR_REPO_PATIENT ./patient-service-main
+          docker tag $ECR_REPO_PATIENT:latest ${{ steps.login-ecr.outputs.registry }}/$ECR_REPO_PATIENT:latest
+          docker push ${{ steps.login-ecr.outputs.registry }}/$ECR_REPO_PATIENT:latest
+          aws ecs update-service --cluster $ECS_CLUSTER --service $ECS_SERVICE_PATIENT --force-new-deployment
+
+      - name: Build, tag, and push appointment-service
+        run: |
+          docker build -t $ECR_REPO_APPOINTMENT ./appointment-service-main
+          docker tag $ECR_REPO_APPOINTMENT:latest ${{ steps.login-ecr.outputs.registry }}/$ECR_REPO_APPOINTMENT:latest
+          docker push ${{ steps.login-ecr.outputs.registry }}/$ECR_REPO_APPOINTMENT:latest
+          aws ecs update-service --cluster $ECS_CLUSTER --service $ECS_SERVICE_APPOINTMENT --force-new-deployment
