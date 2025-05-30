@@ -11,7 +11,7 @@ on:
 env:
   AWS_REGION: us-east-1
   ECR_REPO_PATIENT: patient_service
-  ECR_REPO_APPOINTMENT: appointment_ service
+  ECR_REPO_APPOINTMENT: appointment_service
   ECS_CLUSTER: healthcare-cluster
   ECS_SERVICE_PATIENT: patient-service
   ECS_SERVICE_APPOINTMENT: appointment-service
