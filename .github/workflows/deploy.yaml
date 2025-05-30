@@ -4,8 +4,8 @@ on:
   push:
     branches: [main]
     paths:
-      - 'patient-service/**'
-      - 'appointment-service/**'
+      - 'patient-service-main/**'
+      - 'appointment-service-main/**'
       - '.github/workflows/deploy.yml'
 
 env:
