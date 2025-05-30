@@ -1,15 +1,15 @@
-#  ALB 
-resource "aws_lb" "patient-appointment_alb" {
-  name               = "Patient-Appointment-alb"
+# ====================== ALB ======================
+resource "aws_lb" "healthcare_alb" {
+  name               = "healthcare-alb"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb.id]
   subnets            = module.vpc.public_subnets
 }
 
-# Patient Service ALB Resources
+# ====================== Patient Service ALB Resources ======================
 resource "aws_lb_target_group" "patient_service" {
-  name        = "patientsss-tg"
+  name        = "patient-stg"
   port        = 3000
   protocol    = "HTTP"
   vpc_id      = module.vpc.vpc_id
@@ -25,7 +25,7 @@ resource "aws_lb_target_group" "patient_service" {
 }
 
 resource "aws_lb_listener_rule" "patient_service" {
-  listener_arn = aws_lb_listener.patient-appointment_alb.arn
+  listener_arn = aws_lb_listener.front_end.arn # Changed to match listener name
   priority     = 100
 
   action {
@@ -40,9 +40,9 @@ resource "aws_lb_listener_rule" "patient_service" {
   }
 }
 
-#  Appointment ALB Resources
+# ====================== Appointment Service ALB Resources ======================
 resource "aws_lb_target_group" "appointment_service" {
-  name        = "appointmentsss-tg"
+  name        = "appointment-stg"
   port        = 3001
   protocol    = "HTTP"
   vpc_id      = module.vpc.vpc_id
@@ -58,8 +58,8 @@ resource "aws_lb_target_group" "appointment_service" {
 }
 
 resource "aws_lb_listener_rule" "appointment_service" {
-  listener_arn = aws_lb_listener.patient-appointment_alb.arn
-  priority     = 200
+  listener_arn = aws_lb_listener.front_end.arn # Changed to match listener name
+  priority     = 200                           # Must be unique and lower numbers evaluate first
 
   action {
     type             = "forward"
@@ -73,9 +73,9 @@ resource "aws_lb_listener_rule" "appointment_service" {
   }
 }
 
-# ALB Listener 
-resource "aws_lb_listener" "patient-appointment_alb" {
-  load_balancer_arn = aws_lb.patient-appointment_alb.arn
+# ====================== ALB Listener ======================
+resource "aws_lb_listener" "front_end" {
+  load_balancer_arn = aws_lb.healthcare_alb.arn
   port              = 80
   protocol          = "HTTP"
 
@@ -87,4 +87,17 @@ resource "aws_lb_listener" "patient-appointment_alb" {
       status_code  = "404"
     }
   }
+}
+
+
+output "alb_dns_name" {
+  value = aws_lb.healthcare_alb.dns_name
+}
+
+output "patient_service_url" {
+  value = "http://${aws_lb.healthcare_alb.dns_name}/patients"
+}
+
+output "appointment_service_url" {
+  value = "http://${aws_lb.healthcare_alb.dns_name}/appointments"
 }
