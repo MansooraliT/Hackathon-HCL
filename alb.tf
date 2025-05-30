@@ -1,6 +1,6 @@
 # ====================== ALB ======================
 resource "aws_lb" "healthcare_alb1" {
-  name               = "healthcare-alb"
+  name               = "healthcare-alb-new"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb.id]
