@@ -3,7 +3,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'terraform/**'
+      - '/**'
 permissions:
   id-token: write  # Required for OID
   contents: read
@@ -26,12 +26,10 @@ jobs:
 
       - name: Terraform Init
         run: |
-          cd terraform
           terraform init
 
       - name: Terraform Apply
         run: |
-          cd terraform
           terraform apply -auto-approve -input=false
         env:
           TF_VAR_environment: prod
