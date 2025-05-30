@@ -72,7 +72,7 @@ resource "aws_ecs_service" "patient_service" {
     container_port   = 3000
   }
 
-  depends_on = [aws_lb_listener.healthcare_alb]
+  depends_on = [aws_lb_listener.patient-appointment_alb]
 }
 
 #  Appointment Service
@@ -123,5 +123,5 @@ resource "aws_ecs_service" "appointment_service" {
     container_port   = 3001
   }
 
-  depends_on = [aws_lb_listener.healthcare_alb]
+  depends_on = [aws_lb_listener.patient-appointment_alb]
 }
