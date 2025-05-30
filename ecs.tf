@@ -1,11 +1,11 @@
-# ECS Cluster 
+# ====================== ECS Cluster ======================
 resource "aws_ecs_cluster" "healthcare_cluster" {
   name = "healthcare-cluster"
 }
 
-# IAM Roles 
-resource "aws_iam_role" "ecs_task_execution_role1" {
-  name = "ecs-task-execution-role1"
+# ====================== IAM Roles ======================
+resource "aws_iam_role" "ecs_task_execution_role2" {
+  name = "ecs-task-execution-role2"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
@@ -20,18 +20,19 @@ resource "aws_iam_role" "ecs_task_execution_role1" {
 }
 
 resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy" {
-  role       = aws_iam_role.ecs_task_execution_role1.name
+  role       = aws_iam_role.ecs_task_execution_role2.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
-#  Patient Service
+
+# ====================== Patient Service ======================
 resource "aws_ecs_task_definition" "patient_service" {
   family                   = "patient-service"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = 256
   memory                   = 512
-  execution_role_arn       = aws_iam_role.ecs_task_execution_role1.arn
+  execution_role_arn       = aws_iam_role.ecs_task_execution_role2.arn
 
   container_definitions = jsonencode([{
     name      = "patient-service",
@@ -72,17 +73,17 @@ resource "aws_ecs_service" "patient_service" {
     container_port   = 3000
   }
 
-  depends_on = [aws_lb_listener.patient-appointment_alb]
+  depends_on = [aws_lb_listener.front_end]
 }
 
-#  Appointment Service
+# ====================== Appointment Service ======================
 resource "aws_ecs_task_definition" "appointment_service" {
   family                   = "appointment-service"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = 256
   memory                   = 512
-  execution_role_arn       = aws_iam_role.ecs_task_execution_role1.arn
+  execution_role_arn       = aws_iam_role.ecs_task_execution_role2.arn
 
   container_definitions = jsonencode([{
     name      = "appointment-service",
@@ -123,5 +124,5 @@ resource "aws_ecs_service" "appointment_service" {
     container_port   = 3001
   }
 
-  depends_on = [aws_lb_listener.patient-appointment_alb]
+  depends_on = [aws_lb_listener.front_end]
 }
