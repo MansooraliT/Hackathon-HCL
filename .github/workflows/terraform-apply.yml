@@ -2,8 +2,7 @@ name: Terraform Apply
 on:
   push:
     branches: [main]
-    paths:
-      - '/**'
+
 permissions:
   id-token: write  # Required for OID
   contents: read

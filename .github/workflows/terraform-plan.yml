@@ -1,8 +1,6 @@
 name: Terraform Plan
 on:
   pull_request:
-    paths:
-      - '/**'
 permissions:
   id-token: write  # Required for OID
   contents: read
