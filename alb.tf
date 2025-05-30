@@ -1,5 +1,5 @@
 # ====================== ALB ======================
-resource "aws_lb" "healthcare_alb" {
+resource "aws_lb" "healthcare_alb1" {
   name               = "healthcare-alb"
   internal           = false
   load_balancer_type = "application"
@@ -75,7 +75,7 @@ resource "aws_lb_listener_rule" "appointment_service" {
 
 # ====================== ALB Listener ======================
 resource "aws_lb_listener" "front_end" {
-  load_balancer_arn = aws_lb.healthcare_alb.arn
+  load_balancer_arn = aws_lb.healthcare_alb1.arn
   port              = 80
   protocol          = "HTTP"
 
@@ -91,13 +91,13 @@ resource "aws_lb_listener" "front_end" {
 
 
 output "alb_dns_name" {
-  value = aws_lb.healthcare_alb.dns_name
+  value = aws_lb.healthcare_alb1.dns_name
 }
 
 output "patient_service_url" {
-  value = "http://${aws_lb.healthcare_alb.dns_name}/patients"
+  value = "http://${aws_lb.healthcare_alb1.dns_name}/patients"
 }
 
 output "appointment_service_url" {
-  value = "http://${aws_lb.healthcare_alb.dns_name}/appointments"
+  value = "http://${aws_lb.healthcare_alb1.dns_name}/appointments"
 }

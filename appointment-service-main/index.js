@@ -77,3 +77,6 @@ const express = require('express');
     app.listen(port, '0.0.0.0', () => {
       console.log(`Appointment service listening at http://0.0.0.0:${port}`);
     });
+
+
+    // deploy app to ecs Fargate launch
